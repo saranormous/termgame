@@ -13,7 +13,9 @@ export default [
         localStorage: "readonly",
         navigator: "readonly",
         AudioContext: "readonly",
-        webkitAudioContext: "readonly"
+        webkitAudioContext: "readonly",
+        URLSearchParams: "readonly",
+        requestAnimationFrame: "readonly"
       }
     },
     rules: {
