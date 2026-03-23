@@ -167,7 +167,7 @@ async function run() {
     await runCommand("git push -u origin main");
     await runCommand("open https://vercel.com/new");
 
-    // Part 3 — Beyond websites
+    // Part 3 — Script it
     await runCommand("cd ~");
     await runCommand("mkdir file-sorter");
     await runCommand("cd file-sorter");
@@ -175,7 +175,7 @@ async function run() {
     await runCommand("cat sort-downloads.js");
     await runCommand("node sort-downloads.js");
 
-    // Part 4 — The terminal reaches everything
+    // Part 4 — Connect it
     await runCommand("cd ~");
     await runCommand('open -a "TextEdit"');
     await runCommand('say "The terminal runs everything"');
@@ -185,7 +185,19 @@ async function run() {
     await runCommand(config.followupPromptCommand);
     await runCommand("cat ~/.claude/settings.json");
 
-    await assertQuestCount(30, "Happy path did not complete all quests.");
+    // Part 5 — Fix it
+    await runCommand("cd tetris-game");
+    await runCommand("nano game.js");
+    // Introduce the typo in game.js
+    const gameJsContent = await page.locator("#editor-text").inputValue();
+    await page.locator("#editor-text").fill(gameJsContent.replace("getElementById", "getElementByld"));
+    await page.locator("#save-editor").click();
+    await page.locator("#close-editor").click();
+    await runCommand("npm run dev");
+    await runCommand(config.fixErrorCommand);
+    await runCommand(config.iterateCommand);
+
+    await assertQuestCount(35, "Happy path did not complete all quests.");
 
     text = await terminalText();
     if (!text.includes("All done!")) {
@@ -234,7 +246,9 @@ async function run() {
       keySourceText: "OpenAI API key",
       vaguePromptCommand: 'codex "help me understand my spending"',
       docPromptCommand: 'codex "Read ~/Downloads/budget.csv and tell me what\'s in it"',
-      followupPromptCommand: 'codex "Read ~/Downloads/budget.csv — which of those are wants vs. needs?"'
+      followupPromptCommand: 'codex "Read ~/Downloads/budget.csv — which of those are wants vs. needs?"',
+      fixErrorCommand: 'codex "I got an error: getElementByld is not a function. Fix game.js."',
+      iterateCommand: 'codex "Add a high-score display to the Tetris game that persists between games using localStorage"'
     },
     {
       tool: "claude",
@@ -250,7 +264,9 @@ async function run() {
       keySourceText: "Anthropic API key",
       vaguePromptCommand: 'claude "help me understand my spending"',
       docPromptCommand: 'claude "Read ~/Downloads/budget.csv and tell me what\'s in it"',
-      followupPromptCommand: 'claude "Read ~/Downloads/budget.csv — which of those are wants vs. needs?"'
+      followupPromptCommand: 'claude "Read ~/Downloads/budget.csv — which of those are wants vs. needs?"',
+      fixErrorCommand: 'claude "I got an error: getElementByld is not a function. Fix game.js."',
+      iterateCommand: 'claude "Add a high-score display to the Tetris game that persists between games using localStorage"'
     }
   ];
 
@@ -370,7 +386,7 @@ async function run() {
 
     // skip without valid part number
     await runCommand("skip");
-    await assertTerminalContains("Usage: skip 2, skip 3, or skip 4", "skip without args");
+    await assertTerminalContains("Usage: skip 2, skip 3, skip 4, or skip 5", "skip without args");
 
     console.log("  Error path tests passed.");
   }
@@ -470,6 +486,17 @@ async function run() {
     await runCommand('claude "Read ~/Downloads/budget.csv and tell me what\'s in it"');
     await runCommand('claude "Read ~/Downloads/budget.csv — which of those are wants vs. needs?"');
     await runCommand("cat ~/.claude/settings.json");
+
+    // Part 5
+    await runCommand("cd tetris-game");
+    await runCommand("nano game.js");
+    const gameContent = await page.locator("#editor-text").inputValue();
+    await page.locator("#editor-text").fill(gameContent.replace("getElementById", "getElementByld"));
+    await page.locator("#save-editor").click();
+    await page.locator("#close-editor").click();
+    await runCommand("npm run dev");
+    await runCommand('claude "I got an error: getElementByld is not a function. Fix game.js."');
+    await runCommand('claude "Add a high-score display to the Tetris game that persists between games using localStorage"');
 
     // Lesson note should be visible with checklist and go-deeper message
     const noteEl = page.locator("#lesson-note");
@@ -601,9 +628,9 @@ async function run() {
     await loadFreshPage();
     await chooseTool("claude");
     await runCommand("skip");
-    await assertTerminalContains("Usage: skip 2, skip 3, or skip 4", "skip without args");
+    await assertTerminalContains("Usage: skip 2, skip 3, skip 4, or skip 5", "skip without args");
     await runCommand("skip 1");
-    await assertTerminalContains("Usage: skip 2, skip 3, or skip 4", "skip 1 is invalid");
+    await assertTerminalContains("Usage: skip 2, skip 3, skip 4, or skip 5", "skip 1 is invalid");
 
     // skip 4 is valid — should complete Parts 1-3 and land in Part 4
     await loadFreshPage();
@@ -612,6 +639,14 @@ async function run() {
     await assertTerminalContains("Jumped to Part 4", "skip 4 message");
     // 22 from Parts 1-3 + part4-home auto-completes because cwd is HOME_DIR and run-script is done
     await assertQuestCount(23, "skip 4 should complete Parts 1-3 plus part4-home.");
+
+    // skip 5 is valid — should complete Parts 1-4 and land in Part 5
+    await loadFreshPage();
+    await chooseTool("claude");
+    await runCommand("skip 5");
+    await assertTerminalContains("Jumped to Part 5", "skip 5 message");
+    // 30 from Parts 1-4 + fix-return auto-completes because cwd is tetris-game and mcp-intro is done
+    await assertQuestCount(31, "skip 5 should complete Parts 1-4 plus fix-return.");
 
     // skip should survive reload
     await loadFreshPage();

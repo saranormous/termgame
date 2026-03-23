@@ -4,7 +4,7 @@ You don't need to know how to code to level up your use of AI. All you need is t
 
 **[termgame.ai](https://termgame.ai/)** — runs in your browser, nothing touches your real computer.
 
-TermGame teaches you how to use AI coding agents through a simulated terminal. Pick Codex or Claude Code, then work through 30 quests across four parts.
+TermGame teaches you how to use AI coding agents through a simulated terminal. Pick Codex or Claude Code, then work through 35 quests across five parts.
 
 ## What it covers
 
@@ -19,6 +19,9 @@ Same workflow, different use case: a local script that sorts files in ~/Download
 
 **Part 4 — Connect it**
 The terminal reaches everything: apps, APIs, the web.
+
+**Part 5 — Fix it**
+Break something, read the error, feed it back to the agent, then iterate on a new feature.
 
 ## API keys
 
@@ -59,7 +62,7 @@ For local dev: `npm run dev`, then open [http://127.0.0.1:8000](http://127.0.0.1
 - Static web app — no framework, no build step
 - Simulated terminal and filesystem (nothing real runs)
 - Beginner lesson focused on useful mental models, not perfect realism
-- State grouped into `app`, `script`, `explore` objects
+- State grouped into `app`, `script`, `fix`, `explore` objects
 - Light/dark theme support
 
 ### Project structure
@@ -75,7 +78,7 @@ src/
   app.js            Rendering, events, analytics, feedback/share links
   styles.css        12/13/14px type scale, dark/light themes
 tests/
-  playtest.js       JSDOM unit tests (30 quests, skip, error paths)
+  playtest.js       Playwright E2E tests (35 quests, skip, error paths)
 ```
 
 ### Safety

@@ -69,7 +69,7 @@ A quest object in the `buildQuests()` array in `src/lessons.js`:
 ```js
 {
   id: "my-quest",          // Unique string. Used as key in state.questsDone.
-  part: 1,                 // 1 = Make something, 2 = Put it online, 3 = Beyond websites
+  part: 1,                 // 1 = Build it, 2 = Ship it, 3 = Script it, 4 = Connect it, 5 = Fix it
   title: "Do the thing",   // Shown in the quest list sidebar
   helper: "Why this matters and what the command does. HTML is OK.",
   commands: ["the-command arg1"],  // Shown as "Type this" — can list multiple
@@ -131,6 +131,6 @@ Each is self-contained and follows the quest-authoring pattern above:
 - **Mobile layout** — the two-column layout stacks on narrow screens but could use better touch targets and scroll behavior.
 - ~~**Typo hints**~~ — ✅ implemented (edit-distance suggestion in `commands.js`)
 - ~~**Progress bar**~~ — ✅ implemented ("N of 20" count in quest header)
-- **Fix It** — a short arc that teaches error recovery and iterative prompting. Three quests: (1) introduce a typo in `game.js` via nano, run the app, and watch it fail; (2) copy the error message and feed it back to the agent to fix; (3) ask the agent to add a feature to the existing Tetris app (e.g. a high-score display). Teaches three mental models: errors are information not failure, the error loop (break → read → tell agent → fixed) is 80% of real agent use, and iterative prompting beats one-shot. Could slot in after Part 1 or Part 2.
+- ~~**Fix It**~~ — ✅ implemented (Part 5: break game.js, feed error to agent, iterate with a new feature)
 - **Remix It** — start from someone else's code instead of a blank folder. Clone a small public repo, ask the agent to explain what it does in plain English, then ask the agent to change something (colors, copy, a footer). Teaches three things: most real projects start by downloading existing code (`git clone`), the agent can read and explain code you didn't write (AI as reading glasses), and modifying existing things is less intimidating than starting from scratch. Could be an alternative to Part 3 or a standalone arc.
 - **Connect Your Life** — extends Part 4's terminal-reaches-everything theme into composing tools and personal automation. Possible quests: pipe `curl` output into `say` (weather spoken aloud — teaches the `|` operator), pipe a JSON API through `jq` to extract a single field (teaches structured data), and ask the agent to write a shell script that checks the weather and sends a macOS notification if it's going to rain (teaches "I described a tool that doesn't exist, and now it does"). The throughline: the terminal is not a text box — it's a workbench where small tools snap together.

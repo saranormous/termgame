@@ -67,6 +67,12 @@ export function makeInitialState() {
       reviewed: false,
       ran: false,
     },
+    fix: {
+      broken: false,
+      errorSeen: false,
+      fixed: false,
+      iterated: false,
+    },
     explore: {
       openedApp: false,
       spoke: false,
@@ -408,6 +414,46 @@ export function buildQuests(state) {
       helper: "MCP servers plug new capabilities into Claude — your calendar, Slack, databases, GitHub. This file is where they're configured. Add one and Claude can read your inbox, schedule meetings, or query your data directly.",
       commands: ["cat ~/.claude/settings.json"],
       check: (currentState) => currentState.explore.mcpViewed
+    },
+    {
+      id: "fix-return",
+      part: 5,
+      title: "Go back to your Tetris project",
+      helper: "Time to learn the most important skill: what to do when something breaks. Head back to your Tetris project.",
+      commands: [`cd ${PROJECT_NAME}`],
+      check: (currentState) => currentState.questsDone && currentState.questsDone["mcp-intro"] && currentState.cwd === projectDir()
+    },
+    {
+      id: "fix-break",
+      part: 5,
+      title: "Break something on purpose",
+      helper: "Open <code>game.js</code> in nano and change <code>getElementById</code> to <code>getElementByld</code> (lowercase L → lowercase d). Save it. You're about to learn what an error looks like.",
+      commands: ["nano game.js"],
+      check: (currentState) => currentState.fix.broken
+    },
+    {
+      id: "fix-see-error",
+      part: 5,
+      title: "Run it and watch it fail",
+      helper: "Now run the app. It will break — and that's the point. Read the error message. It tells you exactly what went wrong.",
+      commands: ["npm run dev"],
+      check: (currentState) => currentState.fix.errorSeen
+    },
+    {
+      id: "fix-feed-error",
+      part: 5,
+      title: "Feed the error back to the agent",
+      helper: "Copy the error message and give it to the agent. This is the real workflow: break → read error → tell agent → fixed. Most people quit at the red text. You won't.",
+      commands: [`${tool.key} "I got an error: getElementByld is not a function. Fix game.js."`],
+      check: (currentState) => currentState.fix.fixed
+    },
+    {
+      id: "fix-iterate",
+      part: 5,
+      title: "Ask for a new feature",
+      helper: "The app works again. Now push it further — ask the agent to add something new. You don't have to get everything right in one shot. Real agent use is a conversation, not a single prompt.",
+      commands: [`${tool.key} "Add a high-score display to the Tetris game that persists between games using localStorage"`],
+      check: (currentState) => currentState.fix.iterated
     }
   ];
 }
@@ -612,6 +658,21 @@ const BASE_CONCEPTS = [
     id: "prompt-specificity",
     title: "Concept: specificity = quality",
     body: "The gap between a vague prompt and a specific one is usually the difference between 'meh' and 'useful'. A file path, a concrete question, and a clear goal give Claude everything it needs. Context in, quality out."
+  },
+  {
+    id: "errors-are-data",
+    title: "Concept: errors are data",
+    body: "An error message tells you what went wrong and where. It's not a dead end — it's the next clue. Read it, copy it, and give it to the agent."
+  },
+  {
+    id: "error-loop",
+    title: "Workflow: the error loop",
+    body: "Break → read the error → tell the agent → fixed. This is 80% of real-world agent use. Most people close the terminal when they see red text. The fix is usually one prompt away."
+  },
+  {
+    id: "iterative-prompting",
+    title: "Concept: iterative prompting",
+    body: "You don't have to get everything right in one shot. Start simple, get it working, then ask for more. Each prompt builds on the last. The agent remembers what it already made."
   }
 ];
 
@@ -690,6 +751,11 @@ export function getActiveHintIds(currentQuestId) {
   if (currentQuestId === "claude-doc") return ["prompt-specificity", "action-ai"];
   if (currentQuestId === "specific-followup") return ["prompt-specificity", "action-ai"];
   if (currentQuestId === "mcp-intro") return ["mcp", "action-ai", "go-deeper"];
+  if (currentQuestId === "fix-return") return ["same-workflow", "errors-are-data"];
+  if (currentQuestId === "fix-break") return ["errors-are-data", "nano"];
+  if (currentQuestId === "fix-see-error") return ["errors-are-data", "error-loop"];
+  if (currentQuestId === "fix-feed-error") return ["error-loop", "prompt-specificity"];
+  if (currentQuestId === "fix-iterate") return ["iterative-prompting", "prompt", "go-deeper"];
   return ["terminal"];
 }
 

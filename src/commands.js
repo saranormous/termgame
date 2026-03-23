@@ -8,7 +8,7 @@ import {
   projectDir,
   scriptProjectDir,
   selectedToolConfig
-} from "./lessons.js?v=6";
+} from "./lessons.js?v=7";
 
 // ---------------------------------------------------------------------------
 // Helpers shared across command handlers
@@ -249,6 +249,40 @@ function runAgentPrompt(state, tool, prompt, context) {
     return;
   }
 
+  // Fix It flow — error recovery and iteration
+  if (inTetris && state.fix.broken && !state.fix.fixed) {
+    const lower = prompt.toLowerCase();
+    if (lower.includes("error") || lower.includes("fix") || lower.includes("getelementbyld")) {
+      state.fix.fixed = true;
+      // Restore game.js to the working version
+      state.files[`${projectDir()}/game.js`] = {
+        type: "file",
+        content: [
+          "const button = document.getElementById(\"start-button\");",
+          "const board = document.getElementById(\"board\");",
+          "",
+          "button.addEventListener(\"click\", () => {",
+          "  board.textContent = \"Game loop would start here.\";",
+          "});",
+          ""
+        ].join("\n")
+      };
+      context.addLine("Found the bug in game.js — getElementByld → getElementById. Fixed.", "info");
+      context.addLine("That's the error loop: break → read error → tell agent → fixed. You'll use this constantly.", "system");
+      return;
+    }
+  }
+
+  if (inTetris && state.fix.fixed && !state.fix.iterated) {
+    const lower = prompt.toLowerCase();
+    if (lower.includes("score") || lower.includes("feature") || lower.includes("add")) {
+      state.fix.iterated = true;
+      context.addLine(`${tool.label} updated game.js with a high-score display using localStorage.`, "info");
+      context.addLine("You didn't start over — you built on what was there. That's iterative prompting: start simple, then layer on.", "system");
+      return;
+    }
+  }
+
   createAgentProjectFiles(state);
   state.app.built = true;
   state.app.packageViewed = false;
@@ -452,6 +486,16 @@ register("npm", (state, _args, command, tool, context) => {
     }
     if (!state.app.depsInstalled) {
       context.addLine("Run npm install first — the app needs its packages before it can start.", "warn");
+      return;
+    }
+    if (state.fix.broken && !state.fix.fixed) {
+      state.fix.errorSeen = true;
+      context.addLine("Dev server running at http://127.0.0.1:5173", "info");
+      context.addLine("", "system");
+      context.addLine("TypeError: document.getElementByld is not a function", "error");
+      context.addLine("    at game.js:1:26", "error");
+      context.addLine("", "system");
+      context.addLine("That's a typo — getElementByld isn't a real function. The error tells you the file (game.js) and the line (1). Copy the error and give it to the agent.", "warn");
       return;
     }
     state.app.serverRunning = true;
@@ -722,16 +766,28 @@ function applyPart3Done(state) {
   state.cwd = HOME_DIR;
 }
 
+function applyPart4Done(state) {
+  state.explore.openedApp = true;
+  state.explore.spoke = true;
+  state.explore.curled = true;
+  state.explore.vagueRan = true;
+  state.explore.docWritten = true;
+  state.explore.specificRan = true;
+  state.explore.mcpViewed = true;
+  state.cwd = projectDir();
+}
+
 register("skip", (state, args, _command, tool, context) => {
   const partNum = parseInt(args[0], 10);
-  if (partNum !== 2 && partNum !== 3 && partNum !== 4) {
-    context.addLine("Usage: skip 2, skip 3, or skip 4 — jumps to that part.", "error");
+  if (!(partNum >= 2 && partNum <= 5)) {
+    context.addLine("Usage: skip 2, skip 3, skip 4, or skip 5 — jumps to that part.", "error");
     return;
   }
 
   applyPart1Done(state, tool);
   if (partNum >= 3) applyPart2Done(state, tool);
   if (partNum >= 4) applyPart3Done(state);
+  if (partNum >= 5) applyPart4Done(state);
 
   // Mark matching quests as done
   const quests = context.getActiveQuests();

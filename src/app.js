@@ -8,8 +8,8 @@ import {
   makeInitialState,
   projectDir,
   selectedToolConfig
-} from "./lessons.js?v=6";
-import { executeCommand, pathStatusMessage } from "./commands.js?v=6";
+} from "./lessons.js?v=7";
+import { executeCommand, pathStatusMessage } from "./commands.js?v=7";
 
 let state = loadState();
 let editingPath = null;
@@ -66,6 +66,7 @@ function loadState() {
       ...parsed,
       app: { ...base.app, ...(parsed.app || {}) },
       script: { ...base.script, ...(parsed.script || {}) },
+      fix: { ...base.fix, ...(parsed.fix || {}) },
       explore: { ...base.explore, ...(parsed.explore || {}) },
       installed: { ...base.installed, ...(parsed.installed || {}) },
       env: { ...(parsed.env || {}) },
@@ -182,7 +183,7 @@ function renderQuests() {
   const doneCount = quests.filter((q) => state.questsDone[q.id]).length;
   questsTitleEl.textContent = `Quests (${doneCount}/${quests.length})`;
 
-  const PART_LABELS = { 1: "Part 1 — Build it", 2: "Part 2 — Ship it", 3: "Part 3 — Not just websites", 4: "Part 4 — The terminal reaches everything" };
+  const PART_LABELS = { 1: "Part 1 — Build it", 2: "Part 2 — Ship it", 3: "Part 3 — Script it", 4: "Part 4 — Connect it", 5: "Part 5 — Fix it" };
   let lastPart = 0;
 
   const currentId = activeQuestId();
@@ -545,6 +546,10 @@ saveEditorEl.addEventListener("click", () => {
   }
   if (editingPath === gitignorePath && editorTextEl.value.includes(".env")) {
     state.app.gitignoreOk = true;
+  }
+  const gameJsPath = `${projectDir()}/game.js`;
+  if (editingPath === gameJsPath && editorTextEl.value.includes("getElementByld")) {
+    state.fix.broken = true;
   }
 
   addLine(`Saved ${editingPath}.`, "info");
