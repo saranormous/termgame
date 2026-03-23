@@ -769,7 +769,7 @@ export function getIntroLines(state) {
 
   lines.push(
     { text: `You picked: ${selectedToolConfig(state).label}.`, kind: "info" },
-    { text: "The plan: set up a coding agent, build a Tetris game with it, check the code, ship it live, then use the same trick for a local script.", kind: "system" },
+    { text: "The plan: install an AI agent, use it to build a Tetris game, put the game on the internet, automate a boring task, and learn what to do when things break.", kind: "system" },
     { text: "Let's go. Type: which node", kind: "system" }
   );
 
