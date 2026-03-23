@@ -1,0 +1,15 @@
+{
+  "name": "termgame",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A small terminal-style lesson that teaches beginners how to set up Codex or Claude Code, ask an agent to make a small web app, check it, run it locally, and move it from GitHub to the web.",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "lint": "eslint src/ tests/",
+    "test": "node tests/playtest.js"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.4",
+    "playwright": "^1.54.2"
+  }
+}

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TermGame — Learn the terminal with AI coding agents</title>
+  <meta name="description" content="You don't need to know how to code to level up your use of AI. All you need is the terminal. Practice in your browser, then do it on your machine, for real.">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="TermGame">
+  <meta property="og:description" content="You don't need to know how to code to level up your use of AI. All you need is the terminal.">
+  <meta property="og:image" content="https://termgame.ai/og-image.png">
+  <meta property="og:url" content="https://termgame.ai/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="TermGame">
+  <meta name="twitter:description" content="You don't need to know how to code to level up your use of AI. All you need is the terminal.">
+  <meta name="twitter:image" content="https://termgame.ai/og-image.png">
+  <link rel="stylesheet" href="./src/styles.css?v=6">
+  <script data-goatcounter="https://saranormous.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="hero-top">
+        <div class="eyebrow">You don't need to know how to code to level up your use of AI. All you need is the terminal.</div>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">☀️</button>
+      </div>
+      <h1 class="sr-only">TermGame</h1>
+      <pre class="ascii-title" aria-hidden="true"> _____                    ____
+|_   _|__ _ __ _ __ ___  / ___| __ _ _ __ ___   ___
+  | |/ _ \ '__| '_ ` _ \| |  _ / _` | '_ ` _ \ / _ \
+  | |  __/ |  | | | | | | |_| | (_| | | | | | |  __/
+  |_|\___|_|  |_| |_| |_|\____|\__,_|_| |_| |_|\___|</pre>
+      <p>
+        The terminal is a text interface that sits underneath your entire
+        computer — every app, file, and internet service is reachable from
+        it. It's where AI coding agents live, because from here they don't
+        just answer questions: they do things.
+      </p>
+      <p>
+        In four parts you'll install a coding agent, build a Tetris game
+        with it, ship it to the real internet, write a script that
+        organizes your files, and see how the terminal connects to
+        everything else on your machine — apps, APIs, the web.
+      </p>
+      <p>
+        This is a pretend computer inside your browser. Nothing
+        touches your real files. Practice here first, then do it on your machine, for real.
+      </p>
+      <div class="hero-picker">
+        <div class="picker-row">
+          <button type="button" class="path-button" data-tool="codex">Learn Codex</button>
+          <button type="button" class="path-button" data-tool="claude">Learn Claude Code</button>
+        </div>
+        <p class="picker-copy">Pick one. Switching later resets your progress.</p>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="panel">
+        <h2 class="panel-title">Terminal</h2>
+        <p class="panel-intro">This is your terminal. Type whatever the current quest tells you to type.</p>
+        <div id="terminal" aria-live="polite"></div>
+        <form id="command-form" autocomplete="off">
+          <label class="sr-only" for="command">Terminal input</label>
+          <input id="command" type="text" placeholder="Try: help" autofocus>
+          <button type="submit">Run ⏎</button>
+        </form>
+
+        <section class="editor" id="editor" role="dialog" aria-label="Text editor">
+          <div class="editor-head" id="editor-head">Editing</div>
+          <label class="sr-only" for="editor-text">File contents</label>
+          <textarea id="editor-text"></textarea>
+          <div class="editor-actions">
+            <button type="button" id="save-editor">Ctrl+O Save</button>
+            <button type="button" class="ghost" id="close-editor">Ctrl+X Exit</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="panel sidebar-panel">
+        <section class="sidebar-section">
+          <h2 class="panel-title" id="quests-title">Quests</h2>
+          <p class="panel-intro">Part 1: set up your tools and build an app.<br>Part 2: put it online.<br>Part 3: same workflow, not a website.<br>Part 4: the terminal reaches everything.</p>
+          <div class="quest-list" id="quest-list" role="list" aria-label="Quest steps"></div>
+          <div class="lesson-note" id="lesson-note" hidden></div>
+        </section>
+        <hr class="sidebar-divider">
+        <section class="sidebar-section">
+          <h2 class="panel-title">Context</h2>
+          <p class="panel-intro">Definitions for what you're doing right now.</p>
+          <div class="tip-list" id="active-tip-list"></div>
+          <details class="glossary-shell">
+            <summary>Open full glossary</summary>
+            <div class="glossary-shell-body">
+              <div class="library-list" id="hint-list"></div>
+            </div>
+          </details>
+        </section>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <span>Made by <a href="https://x.com/saranormous" target="_blank" rel="noopener">Sarah Guo</a></span>
+      <span class="footer-sep">·</span>
+      <a href="https://github.com/saranormous/termgame" target="_blank" rel="noopener">Source</a>
+      <span class="footer-sep">·</span>
+      <a id="feedback-link" href="#" target="_blank" rel="noopener">Feedback</a>
+      <span class="footer-sep">·</span>
+      <a id="share-twitter" href="#" target="_blank" rel="noopener">Share on 𝕏</a>
+    </footer>
+  </div>
+
+  <script type="module" src="./src/app.js?v=6"></script>
+</body>
+</html>
