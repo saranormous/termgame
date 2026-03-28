@@ -235,7 +235,7 @@ export function buildQuests(state) {
       id: "agent-build",
       part: 1,
       title: `Ask ${tool.label} to make the app`,
-      helper: "Tell the agent what to build. The prompt below is specific on purpose — it says what kind of app, what files to create, and how to structure it. The more precise you are, the better the result. The agent generates starter code — functional structure, not a polished finished game. That's normal: real projects are built iteratively.",
+      helper: "Tell the agent what to build. The prompt below is specific on purpose — it says what kind of app, what files to create, and how to structure it. The more precise you are, the better the result. The agent generates a working skeleton — the game runs, but it won't be polished. That's normal: you build on it from there.",
       commands: [agentPromptCommand(tool.key)],
       check: (currentState) => currentState.app.built
     },
@@ -251,7 +251,7 @@ export function buildQuests(state) {
       id: "install-app-deps",
       part: 1,
       title: "Install the app's packages",
-      helper: "Packages are chunks of code other people wrote that your app uses instead of reinventing. <code>npm install</code> reads <code>package.json</code> and downloads them all.",
+      helper: "Packages are chunks of code other people wrote that your app uses instead of writing from scratch. <code>npm install</code> reads <code>package.json</code> and downloads them all.",
       commands: ["npm install"],
       check: (currentState) => currentState.app.depsInstalled
     },
@@ -355,7 +355,7 @@ export function buildQuests(state) {
       id: "part4-home",
       part: 4,
       title: "Head back home",
-      helper: "Three parts done. Now for what most tutorials skip: the terminal isn't just for code projects — it's the control layer for your entire Mac.",
+      helper: "Three parts done. Now for what most tutorials skip: the terminal isn't just for code projects — it's connected to everything on your Mac. Apps, system settings, APIs, your files.",
       commands: ["cd ~"],
       check: (currentState) => currentState.questsDone && currentState.questsDone["run-script"] && currentState.cwd === HOME_DIR
     },
@@ -379,7 +379,7 @@ export function buildQuests(state) {
       id: "curl-web",
       part: 4,
       title: "Pull live data from anywhere",
-      helper: "<code>curl</code> fetches any URL — a weather API, a GitHub endpoint, a raw file on the internet. If it has an address, the terminal can reach it.",
+      helper: "<code>curl</code> fetches any URL — a weather API, a public GitHub file, anything on the internet. If it has a web address, the terminal can reach it.",
       commands: ['curl "https://wttr.in/?format=3"'],
       check: (currentState) => currentState.explore.curled
     },
@@ -427,7 +427,7 @@ export function buildQuests(state) {
       id: "fix-break",
       part: 5,
       title: "Break something on purpose",
-      helper: "Open <code>game.js</code> in nano and change <code>getElementById</code> to <code>getElementByld</code> (lowercase L → lowercase d). Save it. You're about to learn what an error looks like.",
+      helper: "Open <code>game.js</code> in nano and change <code>getElementById</code> to <code>getElementByld</code> — replace the capital I with a lowercase L. They look identical in most fonts, which is exactly what makes this a realistic bug. Save it. You're about to learn what an error looks like.",
       commands: ["nano game.js"],
       check: (currentState) => currentState.fix.broken
     },
@@ -512,7 +512,7 @@ const BASE_CONCEPTS = [
   {
     id: "package-json",
     title: "What is: package.json",
-    body: "The app's manifest. Lists which packages (other people's code) it depends on, plus shortcut commands like <code>dev</code> and <code>build</code>."
+    body: "The app's config file. Lists which packages (other people's code) it depends on, plus shortcut commands like <code>dev</code> and <code>build</code>."
   },
   {
     id: "npm-install",
@@ -642,12 +642,12 @@ const BASE_CONCEPTS = [
   {
     id: "curl-cmd",
     title: "Command: curl",
-    body: "Makes HTTP requests from the terminal — fetches a URL and prints the response. Most APIs, web services, and webhooks speak HTTP, so <code>curl</code> can talk to all of them."
+    body: "Fetches a URL from the terminal and prints the response — the same thing your browser does when you visit a page, but in text form. Most web services have URLs you can call this way."
   },
   {
     id: "mcp",
     title: "What is: MCP servers",
-    body: "Plugins that give Claude new capabilities beyond coding: calendar access, GitHub, Slack, databases, email. Configured in a JSON file. Add one and Claude can take action in those systems on your behalf."
+    body: "Plugins that give Claude new capabilities beyond coding: calendar access, GitHub, Slack, databases, email. Configured in a settings file (<code>~/.claude/settings.json</code>). Add one and Claude can take action in those systems on your behalf."
   },
   {
     id: "action-ai",
