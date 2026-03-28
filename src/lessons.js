@@ -427,7 +427,7 @@ export function buildQuests(state) {
       id: "fix-break",
       part: 5,
       title: "Break something on purpose",
-      helper: "Open <code>game.js</code> in nano and change <code>getElementById</code> to <code>getElementByld</code> — replace the capital I with a lowercase L. They look identical in most fonts, which is exactly what makes this a realistic bug. Save it. You're about to learn what an error looks like.",
+      helper: "Open <code>game.js</code> in nano. Look at the first line — it starts with <code>const button = document.getElementById(</code>. Change <code>getElementById</code> to <code>getElementByld</code> by replacing the capital I with a lowercase L. They look identical in most fonts, which is exactly what makes this a realistic bug. Save and exit.",
       commands: ["nano game.js"],
       check: (currentState) => currentState.fix.broken
     },
