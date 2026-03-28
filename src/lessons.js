@@ -259,7 +259,7 @@ export function buildQuests(state) {
       id: "run-localhost",
       part: 1,
       title: "Run the app locally",
-      helper: "<code>npm run dev</code> starts the app on your computer. Open the localhost URL to see your Tetris game in a browser — use arrow keys to play, space to drop. No one else can see it yet.",
+      helper: "<code>npm run dev</code> starts the app on your computer. In a real terminal this command keeps running and blocks the window — open a new tab with <strong>Cmd+T</strong> to keep typing. Open the localhost URL to see your Tetris game in a browser — use arrow keys to play, space to drop. No one else can see it yet.",
       commands: ["npm run dev", "open http://127.0.0.1:5173"],
       check: (currentState) => currentState.app.serverRunning && currentState.app.previewOpened
     },
