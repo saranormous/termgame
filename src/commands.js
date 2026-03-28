@@ -8,7 +8,7 @@ import {
   projectDir,
   scriptProjectDir,
   selectedToolConfig
-} from "./lessons.js?v=7";
+} from "./lessons.js?v=8";
 
 // ---------------------------------------------------------------------------
 // Helpers shared across command handlers
@@ -42,6 +42,112 @@ function sourceFile(state, path) {
 
 function projectPackagePath() {
   return `${projectDir()}/package.json`;
+}
+
+function tetrisGameContent() {
+  return [
+    'const button = document.getElementById("start-button");',
+    'const board = document.getElementById("board");',
+    '',
+    'const COLS = 10, ROWS = 20, BLOCK = 24;',
+    'const COLORS = ["","#ff4757","#ffa502","#2ed573","#1e90ff","#a55eea","#ff6b81","#eccc68"];',
+    'const PIECES = [',
+    '  [[1,1,1,1]],',
+    '  [[2,2],[2,2]],',
+    '  [[0,3,0],[3,3,3]],',
+    '  [[0,4,4],[4,4,0]],',
+    '  [[5,5,0],[0,5,5]],',
+    '  [[6,0,0],[6,6,6]],',
+    '  [[0,0,7],[7,7,7]]',
+    '];',
+    '',
+    'let canvas, ctx, grid, piece, pieceX, pieceY, score, running;',
+    '',
+    'function init() {',
+    '  board.innerHTML = "";',
+    '  canvas = document.createElement("canvas");',
+    '  canvas.width = COLS * BLOCK;',
+    '  canvas.height = ROWS * BLOCK;',
+    '  canvas.style.cssText = "display:block;margin:0 auto;border-radius:8px";',
+    '  board.appendChild(canvas);',
+    '  ctx = canvas.getContext("2d");',
+    '  grid = Array.from({length: ROWS}, () => Array(COLS).fill(0));',
+    '  score = 0; running = true;',
+    '  button.textContent = "Restart";',
+    '  spawn(); requestAnimationFrame(loop);',
+    '}',
+    '',
+    'function spawn() {',
+    '  const shape = PIECES[Math.floor(Math.random() * PIECES.length)];',
+    '  piece = shape.map(r => [...r]);',
+    '  pieceX = Math.floor((COLS - piece[0].length) / 2); pieceY = 0;',
+    '  if (collides(piece, pieceX, pieceY)) endGame();',
+    '}',
+    '',
+    'function collides(p, px, py) {',
+    '  return p.some((row, r) => row.some((v, c) =>',
+    '    v && (py+r >= ROWS || px+c < 0 || px+c >= COLS || grid[py+r]?.[px+c])));',
+    '}',
+    '',
+    'function merge() {',
+    '  piece.forEach((row, r) => row.forEach((v, c) => { if (v) grid[pieceY+r][pieceX+c] = v; }));',
+    '}',
+    '',
+    'function clearLines() {',
+    '  let n = 0;',
+    '  for (let r = ROWS-1; r >= 0; r--)',
+    '    if (grid[r].every(v => v)) { grid.splice(r,1); grid.unshift(Array(COLS).fill(0)); n++; r++; }',
+    '  score += [0,100,300,500,800][n] || 0;',
+    '}',
+    '',
+    'function rotate(p) { return p[0].map((_,c) => p.map(row => row[c]).reverse()); }',
+    '',
+    'let last = 0;',
+    'function loop(t) {',
+    '  if (!running) return;',
+    '  if (t - last > 600) {',
+    '    last = t; pieceY++;',
+    '    if (collides(piece, pieceX, pieceY)) { pieceY--; merge(); clearLines(); spawn(); }',
+    '  }',
+    '  draw(); requestAnimationFrame(loop);',
+    '}',
+    '',
+    'function draw() {',
+    '  ctx.fillStyle = "#0b1020"; ctx.fillRect(0, 0, canvas.width, canvas.height);',
+    '  grid.forEach((row, r) => row.forEach((v, c) => {',
+    '    if (v) { ctx.fillStyle = COLORS[v]; ctx.fillRect(c*BLOCK+1, r*BLOCK+1, BLOCK-2, BLOCK-2); }',
+    '  }));',
+    '  piece.forEach((row, r) => row.forEach((v, c) => {',
+    '    if (v) { ctx.fillStyle = COLORS[v]; ctx.fillRect((pieceX+c)*BLOCK+1, (pieceY+r)*BLOCK+1, BLOCK-2, BLOCK-2); }',
+    '  }));',
+    '  ctx.fillStyle = "#f3f7ff"; ctx.font = "14px monospace";',
+    '  ctx.fillText("Score: " + score, 8, canvas.height - 8);',
+    '}',
+    '',
+    'function endGame() {',
+    '  running = false;',
+    '  ctx.fillStyle = "rgba(0,0,0,0.65)"; ctx.fillRect(0, 0, canvas.width, canvas.height);',
+    '  ctx.fillStyle = "#f3f7ff"; ctx.textAlign = "center";',
+    '  ctx.font = "bold 20px monospace";',
+    '  ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2 - 10);',
+    '  ctx.font = "14px monospace";',
+    '  ctx.fillText("Score: " + score, canvas.width/2, canvas.height/2 + 16);',
+    '  ctx.textAlign = "left";',
+    '}',
+    '',
+    'document.addEventListener("keydown", e => {',
+    '  if (!running) return;',
+    '  if (e.key === "ArrowLeft" && !collides(piece, pieceX-1, pieceY)) pieceX--;',
+    '  if (e.key === "ArrowRight" && !collides(piece, pieceX+1, pieceY)) pieceX++;',
+    '  if (e.key === "ArrowDown") { pieceY++; if (collides(piece, pieceX, pieceY)) { pieceY--; merge(); clearLines(); spawn(); } }',
+    '  if (e.key === "ArrowUp") { const r = rotate(piece); if (!collides(r, pieceX, pieceY)) piece = r; }',
+    '  if (e.key === " ") { while (!collides(piece, pieceX, pieceY+1)) pieceY++; merge(); clearLines(); spawn(); }',
+    '  draw();',
+    '});',
+    '',
+    'button.addEventListener("click", init);',
+    ''
+  ].join("\n");
 }
 
 function createAgentProjectFiles(state) {
@@ -99,15 +205,7 @@ function createAgentProjectFiles(state) {
 
   state.files[`${projectDir()}/game.js`] = {
     type: "file",
-    content: [
-      "const button = document.getElementById(\"start-button\");",
-      "const board = document.getElementById(\"board\");",
-      "",
-      "button.addEventListener(\"click\", () => {",
-      "  board.textContent = \"Game loop would start here.\";",
-      "});",
-      ""
-    ].join("\n")
+    content: tetrisGameContent()
   };
 
   state.files[projectPackagePath()] = {
@@ -257,15 +355,7 @@ function runAgentPrompt(state, tool, prompt, context) {
       // Restore game.js to the working version
       state.files[`${projectDir()}/game.js`] = {
         type: "file",
-        content: [
-          "const button = document.getElementById(\"start-button\");",
-          "const board = document.getElementById(\"board\");",
-          "",
-          "button.addEventListener(\"click\", () => {",
-          "  board.textContent = \"Game loop would start here.\";",
-          "});",
-          ""
-        ].join("\n")
+        content: tetrisGameContent()
       };
       context.addLine("Found the bug in game.js — getElementByld → getElementById. Fixed.", "info");
       context.addLine("That's the error loop: break → read error → tell agent → fixed. You'll use this constantly.", "system");
@@ -294,7 +384,7 @@ function runAgentPrompt(state, tool, prompt, context) {
   state.app.deployed = false;
 
   context.addLine(`${tool.label} generated index.html, style.css, game.js, and package.json. Look before you leap.`, "info");
-  context.addLine("Reminder: browser code is public. No secret keys in those files.", "warn");
+  context.addLine("Note: browser code is public — never put secret API keys in those files.", "system");
 }
 
 // ---------------------------------------------------------------------------
@@ -371,6 +461,10 @@ register("which", (state, args, _command, _tool, context) => {
   const name = args[0];
   if (!name) {
     context.addLine("Usage: which <command>", "error");
+    return;
+  }
+  if (name === "terminal") {
+    context.addLine("This is already a terminal — you're inside it! To check for Node.js, try: which node", "info");
     return;
   }
   if (name === "node" && state.installed.node) context.addLine("/opt/homebrew/bin/node", "system");
@@ -500,7 +594,7 @@ register("npm", (state, _args, command, tool, context) => {
     }
     state.app.serverRunning = true;
     context.addLine("Dev server running at http://127.0.0.1:5173", "info");
-    context.addLine("Open it to see your Tetris game. Make sure it looks right before you ship it.", "system");
+    context.addLine("Now run: open http://127.0.0.1:5173 — it'll open your Tetris game in a new tab.", "system");
   } else if (command === "npm run build") {
     if (!context.inProjectDir()) {
       context.addLine(`cd into ${PROJECT_NAME} first.`, "warn");
@@ -606,7 +700,29 @@ register("open", (state, args, _command, _tool, context) => {
   if (args[0] === "http://127.0.0.1:5173" || args[0] === "http://127.0.0.1:8000") {
     if (state.app.serverRunning) {
       state.app.previewOpened = true;
-      context.addLine("Opening your Tetris game in the browser. Looking good?", "info");
+      const css = state.files[`${projectDir()}/style.css`]?.content || "";
+      const js = state.files[`${projectDir()}/game.js`]?.content || "";
+      const html = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiny Tetris</title>
+  <style>${css}</style>
+</head>
+<body>
+  <main class="app">
+    <h1>Tiny Tetris</h1>
+    <p>A tiny browser game made with help from your coding agent.</p>
+    <button id="start-button">Start game</button>
+    <div id="board" aria-live="polite">Board loads here.</div>
+  </main>
+  <script>${js}</script>
+</body>
+</html>`;
+      context.openBrowserWindow(html);
+      context.addLine("Opened in a new tab — hit Start game and use arrow keys to play. Space bar drops.", "info");
+      context.addLine("Come back to this tab when you're ready to continue.", "system");
     } else {
       context.addLine("Nothing to open yet — start the dev server first with npm run dev.", "warn");
     }

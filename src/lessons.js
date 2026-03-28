@@ -10,7 +10,7 @@ export const LESSON_NOTE = [
   "<li>Open Terminal on your Mac (search for \"Terminal\" in Spotlight).</li>",
   "<li>Install Node.js: <code>brew install node</code> (if you don't have Homebrew, visit <a href=\"https://brew.sh\" target=\"_blank\" rel=\"noopener\">brew.sh</a>).</li>",
   "<li>Install the tool you chose — <code>npm install -g @openai/codex</code> or <code>npm install -g @anthropic-ai/claude-code</code>.</li>",
-  '<li>Get an API key from the <a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> or the <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">OpenAI API keys page</a>. Each key is pay-as-you-go — you pay a small amount per request.</li>',
+  '<li>Get an API key from the <a href="https://console.anthropic.com/" target="_blank" rel="noopener">Anthropic Console</a> or the <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">OpenAI API keys page</a>. Each key is pay-as-you-go — you pay a small amount per session, typically a few cents. <strong>Important:</strong> Claude Pro / Claude.ai subscriptions are separate — they don\'t include API access. You need a console.anthropic.com account with a credit card added.</li>',
   "<li>Set your key: <code>export ANTHROPIC_API_KEY=your-key</code> (or <code>OPENAI_API_KEY</code>). Add the same line to <code>~/.zshrc</code> so new terminal windows load it.</li>",
   "<li>Make a folder, move into it, and ask the agent to build something.</li>",
   "<li>Check what it made, run it locally, and when you're ready, push to GitHub and deploy.</li>",
@@ -37,7 +37,7 @@ export const TOOL_CONFIG = {
     installCommand: "npm install -g @anthropic-ai/claude-code",
     startDisplay: "claude",
     startCommands: ["claude"],
-    keySourceHint: "Go to <code>console.anthropic.com</code>, create an Anthropic API key, and copy it.",
+    keySourceHint: "Go to <code>console.anthropic.com</code>, create an Anthropic API key, and copy it. <strong>Note:</strong> This is a separate API account from Claude.ai or Claude Pro — those subscriptions don't include API access. The API is pay-per-use (typically a few cents per session).",
     installCheck: (state) => state.installed.claude,
     startCheck: (state) => state.started.claude
   }
@@ -210,7 +210,7 @@ export function buildQuests(state) {
       id: "set-key",
       part: 1,
       title: "Get and verify your API key",
-      helper: `${tool.keySourceHint} Then run the command below — replace <code>your-key-here</code> with the key you copied, and run <code>echo</code> to confirm it's set. Treat the key like a password: don't share it or paste it into files others can see.`,
+      helper: `${tool.keySourceHint}<br><br>🔒 <strong>Practice mode:</strong> This is a browser simulation — don't paste your real key here. Use any placeholder (e.g. <code>sk-test-abc123</code>) to practice the steps. You'll enter your real key in your actual terminal later.<br><br>Step 1: run the export command (replace the placeholder with anything). Step 2: run echo to confirm it's set.`,
       commands: [`export ${keyName}=your-key-here`, `echo $${keyName}`],
       check: (currentState) => Boolean(currentState.env[keyName]) && currentState.lastEchoedVar === keyName
     },
@@ -218,7 +218,7 @@ export function buildQuests(state) {
       id: "persist-key",
       part: 1,
       title: "Save the key for future terminal windows",
-      helper: "That <code>export</code> only lasts until you close this window — then it's gone. <code>~/.zshrc</code> is a file that runs every time you open a new terminal. Add your key there so it's always available. <code>nano</code> is a tiny text editor that runs right inside the terminal — use it to open the file, paste your key, then save.",
+      helper: "That <code>export</code> only lasts until you close this window — then it's gone. <code>~/.zshrc</code> is a file that runs every time you open a new terminal. Add your key there so it's always available.<br><br>Step 1: run <code>nano ~/.zshrc</code> — a text editor opens inside the terminal (the second box below). Add your key on a new line, then hit Save and Exit. Step 2: run <code>source ~/.zshrc</code> to reload the file so the key takes effect now.",
       commands: ["nano ~/.zshrc", "source ~/.zshrc"],
       check: (currentState) => currentState.sourcedProfile && currentState.files[PROFILE_PATH].content.includes(`export ${keyName}=`)
     },
@@ -235,7 +235,7 @@ export function buildQuests(state) {
       id: "agent-build",
       part: 1,
       title: `Ask ${tool.label} to make the app`,
-      helper: "Tell the agent what to build. The prompt below is specific on purpose — it says what kind of app, what files to create, and how to structure it. The more precise you are, the better the result.",
+      helper: "Tell the agent what to build. The prompt below is specific on purpose — it says what kind of app, what files to create, and how to structure it. The more precise you are, the better the result. The agent generates starter code — functional structure, not a polished finished game. That's normal: real projects are built iteratively.",
       commands: [agentPromptCommand(tool.key)],
       check: (currentState) => currentState.app.built
     },
@@ -259,7 +259,7 @@ export function buildQuests(state) {
       id: "run-localhost",
       part: 1,
       title: "Run the app locally",
-      helper: "<code>npm run dev</code> starts the app on your computer. Open the localhost URL to see your Tetris game in a browser — no one else can see it yet.",
+      helper: "<code>npm run dev</code> starts the app on your computer. Open the localhost URL to see your Tetris game in a browser — use arrow keys to play, space to drop. No one else can see it yet.",
       commands: ["npm run dev", "open http://127.0.0.1:5173"],
       check: (currentState) => currentState.app.serverRunning && currentState.app.previewOpened
     },

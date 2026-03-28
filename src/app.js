@@ -8,8 +8,8 @@ import {
   makeInitialState,
   projectDir,
   selectedToolConfig
-} from "./lessons.js?v=7";
-import { executeCommand, pathStatusMessage } from "./commands.js?v=7";
+} from "./lessons.js?v=8";
+import { executeCommand, pathStatusMessage } from "./commands.js?v=8";
 
 let state = loadState();
 let editingPath = null;
@@ -446,7 +446,7 @@ function celebrate() {
 
 function openEditor(path) {
   editingPath = path;
-  editorHeadEl.textContent = `nano ${path}`;
+  editorHeadEl.textContent = `Nano Editor — ${path}`;
   editorTextEl.value = state.files[path].content;
   editorEl.classList.add("active");
   editorTextEl.focus();
@@ -483,6 +483,13 @@ function chooseTool(toolKey) {
   render();
 }
 
+function openBrowserWindow(html) {
+  const blob = new Blob([html], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank");
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
 const commandContext = {
   getState,
   setState,
@@ -500,7 +507,8 @@ const commandContext = {
   isDir,
   isFile,
   listDir,
-  inProjectDir
+  inProjectDir,
+  openBrowserWindow
 };
 
 pathButtons.forEach((button) => {
